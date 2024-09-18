@@ -1,0 +1,25 @@
+
+version: '3.9'
+
+services:
+  demo_postgres_dev:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=abc321
+      - POSTGRES_DB=demo-app
+
+  demo_app_dev:
+    image: demo_app:v1
+    restart: always
+    depends_on:
+      - demo_postgres_dev
+    ports:
+      - "3000:3000"
+    command: sh -c "npx drizzle-kit migrate && pnpm dev"
+    environment:
+      - DEBUG=1
+      - POSTGRES_URL=postgresql://root:abc321@demo_postgres_dev/demo-app
